@@ -1,0 +1,408 @@
+
+      :root {
+        --canvas-width: 1440;
+        --canvas-height: 1024;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-snap-type: y mandatory;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #000000;
+        font-family: Arial, sans-serif;
+      }
+
+      .watch-stage {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        scroll-snap-align: start;
+      }
+
+      .watch-stage--light {
+        background: #ffffff;
+      }
+
+      .watch-stage--dark {
+        background: #000000;
+      }
+
+      .clock-face,
+      .watch-hands {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        display: block;
+        max-width: none;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .clock-face--light {
+        width: min(37.43vw, 539px);
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+      }
+
+      .watch-hands--light {
+        width: min(21.81vw, 314px);
+        aspect-ratio: 314 / 209;
+        transform: translate(-50%, calc(-50% - min(7.15vw, 103px)));
+        object-fit: cover;
+      }
+
+      .clock-face--dark {
+        width: min(52.29vw, 753px);
+        aspect-ratio: 1;
+        transform: translate(calc(-50% - 0.5px), calc(-50% - 0.5px));
+        object-fit: cover;
+      }
+
+      .watch-hands--dark {
+        width: min(30.49vw, 439px);
+        aspect-ratio: 439 / 292;
+        transform: translate(calc(-50% - min(7.78vw, 112px)), calc(-50% + 0.5px)) rotate(-90deg);
+        object-fit: cover;
+      }
+
+      .clock-face--large {
+        width: min(73.4vw, 1057px);
+        aspect-ratio: 1;
+        transform: translate(calc(-50% - 0.5px), calc(-50% + min(1.15vw, 16.5px)));
+        object-fit: cover;
+      }
+
+      .watch-hands--inverted {
+        width: min(42.71vw, 615px);
+        aspect-ratio: 615 / 410;
+        transform: translate(calc(-50% + 0.5px), calc(-50% + min(15.42vw, 222px))) rotate(180deg);
+        object-fit: cover;
+      }
+
+      .clock-face--oversized {
+        width: min(92.29vw, 1329px);
+        aspect-ratio: 1;
+        transform: translate(calc(-50% - 0.5px), calc(-50% - 0.5px));
+        object-fit: cover;
+      }
+
+      .watch-hands--right {
+        width: min(53.75vw, 774px);
+        aspect-ratio: 774 / 516;
+        transform: translate(calc(-50% + min(17.92vw, 258px)), -50%) rotate(90deg);
+        object-fit: cover;
+      }
+
+      .scene-asset {
+        position: absolute;
+        display: block;
+        max-width: none;
+        pointer-events: none;
+        user-select: none;
+        object-fit: cover;
+      }
+
+      .wave-field {
+        left: 0;
+        top: 7.71%;
+        width: 132.85%;
+        height: 84.57%;
+        opacity: 0.5;
+      }
+
+      .rock-foreground {
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 33.98%;
+      }
+
+      .edge-watch-right {
+        left: 98.47%;
+        top: 16.41%;
+        width: 31.44%;
+        height: 62.53%;
+        transform: rotate(180deg);
+        transform-origin: center;
+      }
+
+      .edge-watch-bottom {
+        left: 89.03%;
+        top: 83.01%;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: rotate(75.33deg);
+        transform-origin: center;
+      }
+
+      .edge-watch-top {
+        left: -15.76%;
+        top: 0;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: scaleY(-1) rotate(-113.52deg);
+        transform-origin: center;
+      }
+
+      .wave-field--shifted {
+        left: -32.85%;
+      }
+
+      .floating-rock {
+        left: 41.66%;
+        top: 35.89%;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: rotate(85.48deg);
+        transform-origin: center;
+      }
+
+      .floating-rock-shadow {
+        left: 40.83%;
+        top: 34.85%;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: scaleY(-1) rotate(-97.24deg);
+        transform-origin: center;
+      }
+
+      .edge-rock-left {
+        left: -25.9%;
+        top: 25.55%;
+        width: 21.7%;
+        aspect-ratio: 1;
+        transform: rotate(140.41deg);
+        transform-origin: center;
+      }
+
+      .edge-rock-right {
+        left: 95%;
+        top: 30.47%;
+        width: 19.23%;
+        aspect-ratio: 1;
+        transform: scaleY(-1) rotate(34.48deg);
+        transform-origin: center;
+      }
+
+      .side-rock-left {
+        left: -15.49%;
+        top: 36.72%;
+        width: 15.49%;
+        aspect-ratio: 1;
+      }
+
+      .side-rock-right {
+        left: 100%;
+        top: 34.57%;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: scaleY(-1) rotate(-132.68deg);
+        transform-origin: center;
+      }
+
+      .mechanism-right {
+        left: 77.51%;
+        top: 25%;
+        width: 31.44%;
+        height: 62.53%;
+        transform: rotate(-88.96deg);
+        transform-origin: center;
+      }
+
+      .hero-title {
+        position: absolute;
+        left: 50%;
+        top: calc(50% - 153px);
+        transform: translateX(-50%);
+        margin: 0;
+        width: min(74vw, 980px);
+        color: #000000;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(58px, 8.89vw, 128px);
+        font-weight: 700;
+        line-height: 1.1;
+        text-align: center;
+        z-index: 2;
+      }
+
+      .site-nav {
+        position: absolute;
+        left: 50%;
+        top: 3.71%;
+        width: 90.83%;
+        height: 104px;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: clamp(18px, 2.2vw, 32px);
+        padding: 0 clamp(28px, 4vw, 60px);
+        border-radius: 100px;
+        background: rgba(0, 0, 0, 0.5);
+        box-shadow: 0 1px 50px rgba(0, 0, 0, 0.25);
+        color: #ffffff;
+        z-index: 3;
+      }
+
+      .site-logo {
+        margin-right: auto;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(38px, 4.44vw, 64px);
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .nav-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 126px;
+        height: 55px;
+        padding: 0 26px;
+        border-radius: 100px;
+        background: #ffffff;
+        color: #1f2122;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(18px, 2.22vw, 32px);
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .search-mark {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        flex: 0 0 auto;
+      }
+
+      .search-mark::before {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 3px;
+        width: 30px;
+        height: 30px;
+        border: 4px solid #ffffff;
+        border-radius: 50%;
+      }
+
+      .search-mark::after {
+        content: "";
+        position: absolute;
+        left: 33px;
+        top: 34px;
+        width: 22px;
+        height: 4px;
+        border-radius: 999px;
+        background: #ffffff;
+        transform: rotate(45deg);
+        transform-origin: left center;
+      }
+
+      @media (max-width: 760px) {
+        .clock-face--light {
+          width: min(72vw, 539px);
+        }
+
+        .watch-hands--light {
+          width: min(42vw, 314px);
+          transform: translate(-50%, calc(-50% - min(13.8vw, 103px)));
+        }
+
+        .clock-face--dark {
+          width: min(86vw, 753px);
+        }
+
+        .watch-hands--dark {
+          width: min(50vw, 439px);
+          transform: translate(calc(-50% - min(12.8vw, 112px)), calc(-50% + 0.5px)) rotate(-90deg);
+        }
+
+        .clock-face--large {
+          width: min(118vw, 1057px);
+          transform: translate(calc(-50% - 0.5px), calc(-50% + min(2vw, 16.5px)));
+        }
+
+        .watch-hands--inverted {
+          width: min(68vw, 615px);
+          transform: translate(calc(-50% + 0.5px), calc(-50% + min(24vw, 222px))) rotate(180deg);
+        }
+
+        .clock-face--oversized {
+          width: min(138vw, 1329px);
+        }
+
+        .watch-hands--right {
+          width: min(78vw, 774px);
+          transform: translate(calc(-50% + min(26vw, 258px)), -50%) rotate(90deg);
+        }
+
+        .wave-field {
+          left: -18%;
+          width: 170%;
+        }
+
+        .rock-foreground {
+          height: 30%;
+        }
+
+        .edge-watch-right {
+          left: 106%;
+          width: 42%;
+        }
+
+        .edge-rock-left,
+        .edge-rock-right,
+        .side-rock-left,
+        .side-rock-right {
+          display: none;
+        }
+
+        .mechanism-right {
+          left: 88%;
+          width: 44%;
+        }
+
+        .hero-title {
+          top: 35%;
+          width: 88vw;
+          font-size: clamp(48px, 14vw, 92px);
+        }
+
+        .site-nav {
+          top: 24px;
+          width: calc(100% - 28px);
+          height: auto;
+          min-height: 82px;
+          gap: 10px;
+          padding: 14px 18px;
+          border-radius: 28px;
+          flex-wrap: wrap;
+        }
+
+        .site-logo {
+          width: 100%;
+          margin-right: 0;
+        }
+
+        .nav-pill {
+          min-width: auto;
+          height: 38px;
+          padding: 0 14px;
+        }
+
+        .search-mark {
+          width: 38px;
+          height: 38px;
+        }
+      }
+    
