@@ -1,0 +1,639 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Watch Web</title>
+    <style>
+      :root {
+        --canvas-width: 1440;
+        --canvas-height: 1024;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-snap-type: y mandatory;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: #000000;
+        font-family: Arial, sans-serif;
+      }
+
+      .watch-stage {
+        position: relative;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        scroll-snap-align: start;
+      }
+
+      .watch-stage--light {
+        background: #ffffff;
+      }
+
+      .watch-stage--dark {
+        background: #000000;
+      }
+
+      .clock-face,
+      .watch-hands {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        display: block;
+        max-width: none;
+        pointer-events: none;
+        user-select: none;
+      }
+
+      .clock-face--light {
+        width: min(37.43vw, 539px);
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        object-fit: cover;
+      }
+
+      .watch-hands--light {
+        width: min(21.81vw, 314px);
+        aspect-ratio: 314 / 209;
+        transform: translate(-50%, calc(-50% - min(7.15vw, 103px)));
+        object-fit: cover;
+      }
+
+      .clock-face--dark {
+        width: min(52.29vw, 753px);
+        aspect-ratio: 1;
+        transform: translate(calc(-50% - 0.5px), calc(-50% - 0.5px));
+        object-fit: cover;
+      }
+
+      .watch-hands--dark {
+        width: min(30.49vw, 439px);
+        aspect-ratio: 439 / 292;
+        transform: translate(calc(-50% - min(7.78vw, 112px)), calc(-50% + 0.5px)) rotate(-90deg);
+        object-fit: cover;
+      }
+
+      .clock-face--large {
+        width: min(73.4vw, 1057px);
+        aspect-ratio: 1;
+        transform: translate(calc(-50% - 0.5px), calc(-50% + min(1.15vw, 16.5px)));
+        object-fit: cover;
+      }
+
+      .watch-hands--inverted {
+        width: min(42.71vw, 615px);
+        aspect-ratio: 615 / 410;
+        transform: translate(calc(-50% + 0.5px), calc(-50% + min(15.42vw, 222px))) rotate(180deg);
+        object-fit: cover;
+      }
+
+      .clock-face--oversized {
+        width: min(92.29vw, 1329px);
+        aspect-ratio: 1;
+        transform: translate(calc(-50% - 0.5px), calc(-50% - 0.5px));
+        object-fit: cover;
+      }
+
+      .watch-hands--right {
+        width: min(53.75vw, 774px);
+        aspect-ratio: 774 / 516;
+        transform: translate(calc(-50% + min(17.92vw, 258px)), -50%) rotate(90deg);
+        object-fit: cover;
+      }
+
+      .scene-asset {
+        position: absolute;
+        display: block;
+        max-width: none;
+        pointer-events: none;
+        user-select: none;
+        object-fit: cover;
+      }
+
+      .wave-field {
+        left: 0;
+        top: 7.71%;
+        width: 132.85%;
+        height: 84.57%;
+        opacity: 0.5;
+      }
+
+      .rock-foreground {
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 33.98%;
+      }
+
+      .edge-watch-right {
+        left: 98.47%;
+        top: 16.41%;
+        width: 31.44%;
+        height: 62.53%;
+        transform: rotate(180deg);
+        transform-origin: center;
+      }
+
+      .edge-watch-bottom {
+        left: 89.03%;
+        top: 83.01%;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: rotate(75.33deg);
+        transform-origin: center;
+      }
+
+      .edge-watch-top {
+        left: -15.76%;
+        top: 0;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: scaleY(-1) rotate(-113.52deg);
+        transform-origin: center;
+      }
+
+      .wave-field--shifted {
+        left: -32.85%;
+      }
+
+      .floating-rock {
+        left: 41.66%;
+        top: 35.89%;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: rotate(85.48deg);
+        transform-origin: center;
+      }
+
+      .floating-rock-shadow {
+        left: 40.83%;
+        top: 34.85%;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: scaleY(-1) rotate(-97.24deg);
+        transform-origin: center;
+      }
+
+      .edge-rock-left {
+        left: -25.9%;
+        top: 25.55%;
+        width: 21.7%;
+        aspect-ratio: 1;
+        transform: rotate(140.41deg);
+        transform-origin: center;
+      }
+
+      .edge-rock-right {
+        left: 95%;
+        top: 30.47%;
+        width: 19.23%;
+        aspect-ratio: 1;
+        transform: scaleY(-1) rotate(34.48deg);
+        transform-origin: center;
+      }
+
+      .side-rock-left {
+        left: -15.49%;
+        top: 36.72%;
+        width: 15.49%;
+        aspect-ratio: 1;
+      }
+
+      .side-rock-right {
+        left: 100%;
+        top: 34.57%;
+        width: 15.49%;
+        aspect-ratio: 1;
+        transform: scaleY(-1) rotate(-132.68deg);
+        transform-origin: center;
+      }
+
+      .mechanism-right {
+        left: 77.51%;
+        top: 25%;
+        width: 31.44%;
+        height: 62.53%;
+        transform: rotate(-88.96deg);
+        transform-origin: center;
+      }
+
+      .hero-title {
+        position: absolute;
+        left: 50%;
+        top: calc(50% - 153px);
+        transform: translateX(-50%);
+        margin: 0;
+        width: min(74vw, 980px);
+        color: #000000;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(58px, 8.89vw, 128px);
+        font-weight: 700;
+        line-height: 1.1;
+        text-align: center;
+        z-index: 2;
+      }
+
+      .site-nav {
+        position: absolute;
+        left: 50%;
+        top: 3.71%;
+        width: 90.83%;
+        height: 104px;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        gap: clamp(18px, 2.2vw, 32px);
+        padding: 0 clamp(28px, 4vw, 60px);
+        border-radius: 100px;
+        background: rgba(0, 0, 0, 0.5);
+        box-shadow: 0 1px 50px rgba(0, 0, 0, 0.25);
+        color: #ffffff;
+        z-index: 3;
+      }
+
+      .site-logo {
+        margin-right: auto;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(38px, 4.44vw, 64px);
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .nav-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 126px;
+        height: 55px;
+        padding: 0 26px;
+        border-radius: 100px;
+        background: #ffffff;
+        color: #1f2122;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(18px, 2.22vw, 32px);
+        font-weight: 700;
+        line-height: 1;
+        white-space: nowrap;
+      }
+
+      .search-mark {
+        position: relative;
+        width: 48px;
+        height: 48px;
+        flex: 0 0 auto;
+      }
+
+      .search-mark::before {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 3px;
+        width: 30px;
+        height: 30px;
+        border: 4px solid #ffffff;
+        border-radius: 50%;
+      }
+
+      .search-mark::after {
+        content: "";
+        position: absolute;
+        left: 33px;
+        top: 34px;
+        width: 22px;
+        height: 4px;
+        border-radius: 999px;
+        background: #ffffff;
+        transform: rotate(45deg);
+        transform-origin: left center;
+      }
+
+      @media (max-width: 760px) {
+        .clock-face--light {
+          width: min(72vw, 539px);
+        }
+
+        .watch-hands--light {
+          width: min(42vw, 314px);
+          transform: translate(-50%, calc(-50% - min(13.8vw, 103px)));
+        }
+
+        .clock-face--dark {
+          width: min(86vw, 753px);
+        }
+
+        .watch-hands--dark {
+          width: min(50vw, 439px);
+          transform: translate(calc(-50% - min(12.8vw, 112px)), calc(-50% + 0.5px)) rotate(-90deg);
+        }
+
+        .clock-face--large {
+          width: min(118vw, 1057px);
+          transform: translate(calc(-50% - 0.5px), calc(-50% + min(2vw, 16.5px)));
+        }
+
+        .watch-hands--inverted {
+          width: min(68vw, 615px);
+          transform: translate(calc(-50% + 0.5px), calc(-50% + min(24vw, 222px))) rotate(180deg);
+        }
+
+        .clock-face--oversized {
+          width: min(138vw, 1329px);
+        }
+
+        .watch-hands--right {
+          width: min(78vw, 774px);
+          transform: translate(calc(-50% + min(26vw, 258px)), -50%) rotate(90deg);
+        }
+
+        .wave-field {
+          left: -18%;
+          width: 170%;
+        }
+
+        .rock-foreground {
+          height: 30%;
+        }
+
+        .edge-watch-right {
+          left: 106%;
+          width: 42%;
+        }
+
+        .edge-rock-left,
+        .edge-rock-right,
+        .side-rock-left,
+        .side-rock-right {
+          display: none;
+        }
+
+        .mechanism-right {
+          left: 88%;
+          width: 44%;
+        }
+
+        .hero-title {
+          top: 35%;
+          width: 88vw;
+          font-size: clamp(48px, 14vw, 92px);
+        }
+
+        .site-nav {
+          top: 24px;
+          width: calc(100% - 28px);
+          height: auto;
+          min-height: 82px;
+          gap: 10px;
+          padding: 14px 18px;
+          border-radius: 28px;
+          flex-wrap: wrap;
+        }
+
+        .site-logo {
+          width: 100%;
+          margin-right: 0;
+        }
+
+        .nav-pill {
+          min-width: auto;
+          height: 38px;
+          padding: 0 14px;
+        }
+
+        .search-mark {
+          width: 38px;
+          height: 38px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="watch-stage watch-stage--light" aria-label="Minimal white watch face" data-node-id="2120:174">
+        <img
+          class="clock-face clock-face--light"
+          src="https://www.figma.com/api/mcp/asset/a2b9e4e9-21a2-41d7-8983-04811dc50606"
+          alt=""
+          data-node-id="2124:10"
+        />
+        <img
+          class="watch-hands watch-hands--light"
+          src="https://www.figma.com/api/mcp/asset/5e8cc24a-74a3-421d-b1c8-69168351095f"
+          alt=""
+          data-node-id="2124:11"
+        />
+      </section>
+
+      <section class="watch-stage watch-stage--dark" aria-label="Minimal black watch face" data-node-id="2124:12">
+        <img
+          class="clock-face clock-face--dark"
+          src="https://www.figma.com/api/mcp/asset/5b73baf6-b39c-4919-b9f7-f3fe45034ae2"
+          alt=""
+          data-node-id="2124:13"
+        />
+        <img
+          class="watch-hands watch-hands--dark"
+          src="https://www.figma.com/api/mcp/asset/9f96c53f-21bf-4651-9a28-85039c4a4505"
+          alt=""
+          data-node-id="2124:14"
+        />
+      </section>
+
+      <section class="watch-stage watch-stage--light" aria-label="Large white watch face" data-node-id="2124:18">
+        <img
+          class="clock-face clock-face--large"
+          src="https://www.figma.com/api/mcp/asset/c21c4513-5c77-486e-a52e-b5329b363506"
+          alt=""
+          data-node-id="2124:19"
+        />
+        <img
+          class="watch-hands watch-hands--inverted"
+          src="https://www.figma.com/api/mcp/asset/4a5ef71c-cb60-4e4b-8f69-19df4449e19f"
+          alt=""
+          data-node-id="2124:20"
+        />
+      </section>
+
+      <section class="watch-stage watch-stage--dark" aria-label="Oversized black watch face" data-node-id="2124:21">
+        <img
+          class="clock-face clock-face--oversized"
+          src="https://www.figma.com/api/mcp/asset/77a03dc0-b502-43ee-8c9a-4dd8d6095163"
+          alt=""
+          data-node-id="2124:22"
+        />
+        <img
+          class="watch-hands watch-hands--right"
+          src="https://www.figma.com/api/mcp/asset/bcaa57eb-e323-41e6-a078-86f2abffb53e"
+          alt=""
+          data-node-id="2124:23"
+        />
+      </section>
+
+      <section class="watch-stage watch-stage--light" aria-label="Abstract terrain watch scene" data-node-id="2106:30">
+        <img
+          class="scene-asset wave-field"
+          src="https://www.figma.com/api/mcp/asset/b19c55d2-b2a4-4db2-997f-b17c58b55fd6"
+          alt=""
+          data-node-id="2120:61"
+        />
+        <img
+          class="scene-asset rock-foreground"
+          src="https://www.figma.com/api/mcp/asset/8affc3bc-43f0-4a33-9a94-301f09fd3b46"
+          alt=""
+          data-node-id="2114:7"
+        />
+        <img
+          class="scene-asset edge-watch-right"
+          src="https://www.figma.com/api/mcp/asset/232ef97b-1745-49c0-937c-74c8e07f8040"
+          alt=""
+          data-node-id="2114:6"
+        />
+        <img
+          class="scene-asset edge-watch-bottom"
+          src="https://www.figma.com/api/mcp/asset/be9d0a4d-96bf-47e8-a0b0-7d7989b58625"
+          alt=""
+          data-node-id="2114:9"
+        />
+        <img
+          class="scene-asset edge-watch-top"
+          src="https://www.figma.com/api/mcp/asset/be9d0a4d-96bf-47e8-a0b0-7d7989b58625"
+          alt=""
+          data-node-id="2114:11"
+        />
+      </section>
+
+      <section class="watch-stage watch-stage--light" aria-label="Terrain watch scene with navigation" data-node-id="2114:12">
+        <img
+          class="scene-asset wave-field wave-field--shifted"
+          src="https://www.figma.com/api/mcp/asset/c16bc7e7-224f-46e7-b38b-b7a4a74e5f21"
+          alt=""
+          data-node-id="2120:63"
+        />
+        <img
+          class="scene-asset floating-rock-shadow"
+          src="https://www.figma.com/api/mcp/asset/318866ea-1591-4b3d-83d4-68ad9d2de57f"
+          alt=""
+          data-node-id="2114:13"
+        />
+        <img
+          class="scene-asset rock-foreground"
+          src="https://www.figma.com/api/mcp/asset/0770b95d-d42d-4ce7-9841-280b7f1c9e2a"
+          alt=""
+          data-node-id="2114:14"
+        />
+        <img
+          class="scene-asset edge-watch-right"
+          src="https://www.figma.com/api/mcp/asset/393bda73-e71f-41c5-8f29-5598fae1aefb"
+          alt=""
+          data-node-id="2114:16"
+        />
+        <img
+          class="scene-asset floating-rock"
+          src="https://www.figma.com/api/mcp/asset/318866ea-1591-4b3d-83d4-68ad9d2de57f"
+          alt=""
+          data-node-id="2114:15"
+        />
+        <nav class="site-nav" aria-label="Main navigation" data-node-id="2116:32">
+          <div class="site-logo" data-node-id="2116:33">logo</div>
+          <a class="nav-pill" href="#" data-node-id="2116:51">HOME</a>
+          <a class="nav-pill" href="#" data-node-id="2116:52">ABOUT US</a>
+          <a class="nav-pill" href="#" data-node-id="2116:53">WATCHES</a>
+          <a class="nav-pill" href="#" data-node-id="2116:54">SIGN UP</a>
+          <span class="search-mark" aria-label="Search" data-node-id="2116:49"></span>
+        </nav>
+      </section>
+
+      <section class="watch-stage watch-stage--light" aria-label="Precision meets elegance scene" data-node-id="2114:17">
+        <img
+          class="scene-asset wave-field"
+          src="https://www.figma.com/api/mcp/asset/47573b3f-2433-43c2-82b3-84a9cb92a235"
+          alt=""
+          data-node-id="2120:64"
+        />
+        <img
+          class="scene-asset edge-rock-left"
+          src="https://www.figma.com/api/mcp/asset/e0dd94d4-e407-421f-91c3-d57c68fc0098"
+          alt=""
+          data-node-id="2114:20"
+        />
+        <img
+          class="scene-asset rock-foreground"
+          src="https://www.figma.com/api/mcp/asset/940ef212-dda2-4bd0-932e-a968b81eb217"
+          alt=""
+          data-node-id="2114:19"
+        />
+        <img
+          class="scene-asset edge-watch-right"
+          src="https://www.figma.com/api/mcp/asset/be3b4336-9af4-4f60-abd0-3c181b890b96"
+          alt=""
+          data-node-id="2114:21"
+        />
+        <img
+          class="scene-asset edge-rock-right"
+          src="https://www.figma.com/api/mcp/asset/e0dd94d4-e407-421f-91c3-d57c68fc0098"
+          alt=""
+          data-node-id="2114:18"
+        />
+        <h1 class="hero-title" data-node-id="2114:31">
+          Precision<br />
+          Meets Elegance.
+        </h1>
+        <nav class="site-nav" aria-label="Main navigation" data-node-id="2127:82">
+          <div class="site-logo" data-node-id="2127:83">logo</div>
+          <a class="nav-pill" href="#" data-node-id="2127:86">HOME</a>
+          <a class="nav-pill" href="#" data-node-id="2127:89">ABOUT US</a>
+          <a class="nav-pill" href="#" data-node-id="2127:92">WATCHES</a>
+          <a class="nav-pill" href="#" data-node-id="2127:95">SIGN UP</a>
+          <span class="search-mark" aria-label="Search" data-node-id="2127:96"></span>
+        </nav>
+      </section>
+
+      <section class="watch-stage watch-stage--light" aria-label="Terrain scene with watch mechanism" data-node-id="2114:22">
+        <img
+          class="scene-asset wave-field wave-field--shifted"
+          src="https://www.figma.com/api/mcp/asset/5d58412b-b269-496f-ac91-8ff96b180470"
+          alt=""
+          data-node-id="2120:65"
+        />
+        <img
+          class="scene-asset rock-foreground"
+          src="https://www.figma.com/api/mcp/asset/bceb711b-0926-4f52-810d-1a5a70a87e02"
+          alt=""
+          data-node-id="2114:23"
+        />
+        <img
+          class="scene-asset mechanism-right"
+          src="https://www.figma.com/api/mcp/asset/45fa5ae5-d933-4926-a721-2cd86e45bee8"
+          alt=""
+          data-node-id="2114:24"
+        />
+        <img
+          class="scene-asset side-rock-left"
+          src="https://www.figma.com/api/mcp/asset/60227c7c-f4c5-410c-bf4d-f9e10bec0b4e"
+          alt=""
+          data-node-id="2114:25"
+        />
+        <img
+          class="scene-asset side-rock-right"
+          src="https://www.figma.com/api/mcp/asset/60227c7c-f4c5-410c-bf4d-f9e10bec0b4e"
+          alt=""
+          data-node-id="2114:26"
+        />
+        <nav class="site-nav" aria-label="Main navigation" data-node-id="2127:99">
+          <div class="site-logo" data-node-id="2127:100">logo</div>
+          <a class="nav-pill" href="#" data-node-id="2127:103">HOME</a>
+          <a class="nav-pill" href="#" data-node-id="2127:106">ABOUT US</a>
+          <a class="nav-pill" href="#" data-node-id="2127:109">WATCHES</a>
+          <a class="nav-pill" href="#" data-node-id="2127:112">SIGN UP</a>
+          <span class="search-mark" aria-label="Search" data-node-id="2127:113"></span>
+        </nav>
+      </section>
+    </main>
+  </body>
+</html>
